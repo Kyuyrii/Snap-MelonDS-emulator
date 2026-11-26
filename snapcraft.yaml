@@ -27,13 +27,12 @@ icon: melon.svg
 
 apps:
   melonds-emulator:
+    command-chain: [force-snap-common-folder]
     command: melonDS
     desktop: net.kuribo64.melonDS.desktop
     common-id: net.kuribo64.melonDS
     environment:
       QT_QPA_PLATFORMTHEME: xdgdesktopportal
-      LD_LIBRARY_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR:$LD_LIBRARY_PATH
-      QT_PLUGIN_PATH: $SNAP/lxqt-support/usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/qt6/plugins:$QT_PLUGIN_PATH
     extensions: [kde-neon-6]
     plugs:
       - unity7
@@ -72,10 +71,15 @@ parts:
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libenet.so*
       - usr/lib/$CRAFT_ARCH_TRIPLET_BUILD_FOR/libdecor-0.so*
 
-  desktop-file:
+  dot-desktop:
     after: [dependencies]
     plugin: nil
     build-packages: [curl]
     override-build: |
       curl -o $CRAFT_PART_INSTALL/net.kuribo64.melonDS.desktop https://raw.githubusercontent.com/melonDS-emu/melonDS/refs/heads/master/res/net.kuribo64.melonDS.desktop
-      sed -i 's|Name=melonDS|Name=melonDS [Kyu]|' $CRAFT_PART_INSTALL/net.kuribo64.melonDS.desktop
+      echo "StartupWMClass=net.kuribo64.melonDS" >> "$CRAFT_PART_INSTALL/net.kuribo64.melonDS.desktop"
+
+  command-chain:
+    after: [dot-desktop]
+    plugin: dump
+    source: ./sh/
